@@ -1,0 +1,36 @@
+{% extends 'base-template-navbar.html' %}
+{%load static%}
+{%block content%}
+<script src="{% static 'js/home_design.js' %}"></script>
+
+{%for idea,contributors in auth_user_projects_list%}
+    <div class="ml-4 mr-4 mt-5 mb-5">
+        <div class="card text-center">
+            <div class="card-body">
+            <h5 class="card-title text-primary">{{idea.post_heading}}</h5>
+            <p class="card-text text-justify">{{idea.post_details}}</p>
+            {%if request.user.username == idea.fk_user_profile_id.fk_user_id.username%}
+            <select id="status_select_{{forloop.counter}}" onchange="change_project_status('{{forloop.counter}}')" class="form-select btn btn-danger mr-2 pl-2" aria-label="Default select example">
+                <option data-color="danger" selected value="1">{{idea.status}}</option>
+                <option data-color="info" class="bg-info" value="2">Progress</option>
+                <option data-color="success" class="bg-success" value="3">Completed</option>
+            </select>
+            {%else%}
+            <button class="btn btn-success">Interested</button>    
+            {%endif%}
+            <div class="d-flex justify-content-center">
+                {%for contributor in contributors%}
+            <div class="rounded-circle ml-4 overflow-hidden mt-2 mb-2" style="width: 50px; height: 50px;">
+                {%if contributor.fk_user_profile_id.user_profile_image%}
+                <img src="{{contributor.fk_user_profile_id.user_profile_image.url}}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                  {%else%}
+                  <img src="{%static 'images/profile_avatar.png'%}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                  {%endif%}
+            </div>
+        </div>
+        {%endfor%}
+        </div>
+        </div>
+    </div>
+    {%endfor%}
+    {%endblock%}

@@ -1,0 +1,43 @@
+{%extends 'base-template-navbar.html'%}
+{%block content%}      
+{%load static%}
+
+<script src="{%static 'js/message.js'%}"></script>
+<div class="container mt-5">
+    <div class="row">
+        <div class="card col-sm-4 pt-4 mb-4">
+            <div class="card-header">
+                <h3>Messages</h3>
+                <!-- oninput="search_chat(this.value)" -->
+                <input id="search_chat" class="form-control mr-sm-2"  type="text" placeholder="Search chat" aria-label="Search">    
+            </div>
+            <ul id="chats" class="list-group list-group-flush" style="height: 350px;overflow-y: auto;">
+            <button class="list-group-item" href="#">{{request.user.username|title}}</button>
+            {%for chat_name in chat_users%}
+            <button class="list-group-item" href="#">{{chat_name.fk_user_id__username|title}}</button>
+            {%endfor%}
+        </ul>
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="card col-sm-7 pt-4 mb-4">
+            <div id ='chat_heading' class="card-header">
+            Chat Name Placeholder 
+            </div>
+            <div class="card-body">
+                <div id="username-element" data-username="{{ request.user.username }}"></div>
+                <div id="send_msg_to" data-username=""></div>
+
+                <div id = 'msg_placeholder' class="mt-3" style="height: 180px;overflow-y: auto;">
+                        
+                </div>
+                <div class="gray_backgound" style="margin-top: 5%;">
+                    <textarea rows="3" style="max-width: 95%;" class="form-control ml-3 pr-5" placeholder="Write a message..." id="message"></textarea>
+                  <button id="submit_msg" class="btn btn-info mt-2 ml-3">post</button>
+                </div>
+                  
+
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

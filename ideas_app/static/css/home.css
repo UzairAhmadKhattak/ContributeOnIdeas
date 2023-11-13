@@ -1,0 +1,67 @@
+
+#main{
+    margin-left: 5%;
+    margin-top: 3%;
+    margin-right: 5%;
+    margin-bottom: 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+#idea_desc{
+    width: 100%; 
+    height: 150px; 
+    resize: none; 
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+#idea_head{
+    width: 100%; 
+    height: 50px; 
+    resize: none; 
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+#project_card{
+    width: 18rem;
+    max-height: 250px;
+}
+#user_intro{
+    width: 18rem;
+    height:fit-content;
+}
+
+#fileUpload{
+    display:none;
+}
+#create_post, #user_intro, #project_card,.otherposts{
+    margin-top: 10px;
+}
+@media screen and (max-width: 948px){
+    #user_intro, #project_card,.otherposts{
+        width: 30rem;
+    }
+    #middle_column{
+        width: 30rem;
+    }
+    #idea_desc{
+        width: 100%;
+    }
+    #main{
+        display: flex;
+        justify-content: center;
+    }
+
+}
+.new_feeds{
+    display: flex;
+    justify-content: center; 
+}
+
+.gray_backgound{
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border: 1px solid rgb(233, 230, 230);
+    border-radius: 7px;
+    background-color: rgb(233, 230, 230);
+}

@@ -1,0 +1,188 @@
+{% extends 'base-template-navbar.html' %}
+
+    {% block content %}
+    {% load static %}
+    {% load home_filters %}
+
+    <script src="{% static 'js/home_design.js' %}"></script>
+    <div id=main>
+      {% comment %} user intro card {% endcomment %}
+        <div class="card" id = 'user_intro'>
+            <div class="card-upper bg-danger" style="padding: 1rem;">
+              <div class="rounded-circle overflow-hidden" style="width: 100px; height: 100px; margin: 0 auto;">
+                {%if user_profile_row.user_profile_image%}
+                <img id="profile_image" src="{{user_profile_row.user_profile_image.url}}" class="card-img-top" alt="user image" style="width: 100%; height: 100%; object-fit: cover;">
+                {%else%}
+                <img src="{%static 'images/profile_avatar.png'%}" class="card-img-top" alt="user image" style="width: 100%; height: 100%; object-fit: cover;">
+                  {%endif%}
+              </div>
+            </div>
+            <div class="card-body">
+            <h5 class="card-title text-center">{{username|title}}</h5>
+              <p class="card-text text-center">{{user_profile_row.user_about}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item text-center">Ideas Posted {{ideas_posted}}</li>
+              <li class="list-group-item text-center">Completed ideas <span id="completed_projects"></span></li>
+              <li class="list-group-item text-center">{{num_of_user_worked_with_auth_user}} people Worked with {{username}}</li>
+            </ul>
+          </div>
+          
+          {% comment %} create post card {% endcomment %}
+          <div id = 'middle_column'>
+            <div id='create_post' class="card" style='max-height:450px'>
+              <div class="card-header bg-danger text-light">
+                <h5>Post an idea and change the world</h5>
+              </div>
+              <div class="card-body">
+                <form action="post_idea" method="post" enctype="multipart/form-data">
+                  {%csrf_token%}
+                  <textarea required class="form-control" name="heading" id="idea_head" placeholder='Heading.'></textarea>
+                  <textarea required class="form-control" name="description" id="idea_desc" placeholder='Description.'></textarea>
+                  <!-- <textarea required class="form-control" name="github_link" id="github_link" placeholder='Github Link.'></textarea> -->
+                  <button type="submit" class="btn btn-info">Post</button>
+                <label for="fileUpload" class="btn btn-info mt-2">
+                  <i class="fas fa-paperclip"></i>
+                </label>
+                <input type="file" accept=".jpg,.jpeg,.png" id="fileUpload" name="fileUpload">
+              </form>
+              </div>
+            </div>
+          
+          <!-- New feed -->
+          {%for idea,exp,project_contributor,notification_sent,comments in new_feeds_list%}
+          <div class = 'new_feeds'>
+            <div class="card otherposts"  style='max-width:550px;width:100%;'>
+              <div class="row">
+                <div class="col-2">
+                  <div class="rounded-circle ml-4 overflow-hidden mt-2 mb-2" style="width: 50px; height: 50px;">
+                    {%if idea.fk_user_profile_id.user_profile_image%}
+                    <img src="{{idea.fk_user_profile_id.user_profile_image.url}}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                      {%else%}
+                      <img src="{%static 'images/profile_avatar.png'%}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                      {%endif%}
+                    </div>
+                  </div>
+                  <div class="col">
+                  <a class="col" style="padding-right: 0%;" href="{%url 'profile' username=idea.fk_user_profile_id.fk_user_id.username%}"><h5>{{idea.fk_user_profile_id.fk_user_id.username|title}}</h5></a>
+                  <p>{{exp.job_position}}</p>
+                  </div>
+                  <div class="col mt-2 mb-2 mr-2">
+                  <div style="display: flex;justify-content: flex-end;">
+                  <button class="btn btn-danger">Edit</button>
+                  </div>
+                </div>
+
+              </div>
+              <img src="{{idea.post_image.url}}" class="card-img-top" height="400rem" alt="post_image">
+                <div class="card-body">
+                  <h5 class="card-title">{{idea.post_heading}}</h5>
+                  <p class="card-text">{{idea.post_details}}</p>
+                  <div class="row pl-4">
+
+                    {%if request.user.username == idea.fk_user_profile_id.fk_user_id.username%}
+                      {%if idea.status == 'Not Started'%}
+                      <select id="status_select_{{idea.id}}" onchange="change_project_status('{{idea.id}}')" class="form-select btn btn-danger mr-2 pl-2" aria-label="Default select example">
+                      <option class="bg-danger" data-color="danger" selected value="1">{{idea.status}}</option>
+                      <option data-color="info" class="bg-info" value="2">In Progress</option>
+                      <option data-color="success" class="bg-success" value="3">Completed</option>
+                      {%elif idea.status == 'In Progress'%}
+                      <select id="status_select_{{idea.id}}" onchange="change_project_status('{{idea.id}}')" class="form-select btn btn-info mr-2 pl-2" aria-label="Default select example">
+                    
+                      <option class="bg-info" data-color="info" selected value="1">{{idea.status}}</option>
+                      <option data-color="danger" class="bg-danger" value="2">Not Started</option>
+                      <option data-color="success" class="bg-success" value="3">Completed</option>
+                      {%else%}
+                      <select id="status_select_{{idea.id}}" onchange="change_project_status('{{idea.id}}')" class="form-select btn btn-success mr-2 pl-2" aria-label="Default select example">
+                      <option data-color="success" selected value="1">{{idea.status}}</option>
+                      <option data-color="info" class="bg-info" value="2">In Progress</option>
+                      <option data-color="danger" class="bg-danger" value="3">Not Started</option>
+                      {%endif%}
+                      
+                    </select>
+                    {%else%}
+                    {% if notification_sent|should_show_interested:idea %}
+                      <button idea = "{{idea.post_heading}}" idea_id="{{idea.id}}" send_from_id = '{{request.user.id}}' send_to_id="{{idea.fk_user_profile_id.fk_user_id.id}}" class="btn btn-success Interested_button" interested_auth = '{{request.user.username}}' owner='{{idea.fk_user_profile_id.fk_user_id.username}}'>Interested</button>  
+                      {%endif%}
+                    <button class="btn btn-primary disabled">{{idea.status}}</button>
+                      
+                    {%endif%}            
+                  {%for contributor in project_contributor%} 
+                  <div class="rounded-circle ml-4 overflow-hidden" style="width: 35px; height: 35px;">
+                    {%if contributor.fk_user_profile_id.user_profile_image%}  
+                      <img src="{{contributor.fk_user_profile_id.user_profile_image.url}}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                      {%else%}
+                      <img src="{%static 'images/profile_avatar.png'%}" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                      {%endif%}
+                    </div>
+                    {%endfor%}
+                  </div>
+                  
+                  <!-- comments section -->
+                  <div   class="row mt-2 ml-1 mr-2 gray_backgound">
+                    <input type="text" class="form-control ml-3 mr-3 comment_field" input_id="comment_{{forloop.counter}}" id="comment_{{forloop.counter}}" placeholder="Enter Comments" interested_auth = '{{request.user.username}}' owner='{{idea.fk_user_profile_id.fk_user_id.username}}' send_from_id = '{{request.user.id}}' send_to_id="{{idea.fk_user_profile_id.fk_user_id.id}}" idea = "{{idea.post_heading}}" idea_id="{{idea.id}}">                    
+                    <button interested_auth = '{{request.user.username}}' input_id="comment_{{forloop.counter}}" owner='{{idea.fk_user_profile_id.fk_user_id.username}}' send_from_id = '{{request.user.id}}' send_to_id="{{idea.fk_user_profile_id.fk_user_id.id}}" idea = "{{idea.post_heading}}" idea_id="{{idea.id}}" class="btn btn-info mt-2 ml-3 post_comment">post</button>
+                  </div>
+                  <div id = "commented_section_{{forloop.counter}}" class="mt-3">
+                    
+                    {%for comment in comments%}
+                    <div class="row pl-3 pr-5 mb-2" style="border-bottom: 1px solid rgb(211, 208, 208);">
+                      <div class="rounded-circle ml-4 overflow-hidden" style="width: 35px; height: 35px;">
+                        <img src="/media/user_images/DSC_8002_4SIyLSm_THyFnUR.JPG" alt="Profile Picture" class="w-100 h-100 object-fit-cover">
+                      </div>
+                      <p class="pg" style="margin-left: 10px; overflow-x: hidden; max-width: 400px;">{{comment.comment}}</p>
+                    </div>
+                    {%endfor%}
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            {%endfor%}
+          </div>
+
+
+          {% comment %} idea card {% endcomment %}
+          <div class="card" id = 'project_card'>
+            <div class="card-header bg-danger text-light text-center">
+              <h5 class= 'pb-1'>{{username}}'s ideas </h5>
+            </div>
+            <ul class="list-group list-group-flush">
+              {%for user_project in user_projects_4_rows%}
+              <li class="list-group-item text-center"><a class='text-dark' href='{%url "specific_idea" idea_name=user_project.post_heading|urlencode %}'>{{user_project.post_heading}}</a></li>
+              {%endfor%}  
+            
+              <li class="list-group-item text-center"><a href="{% url 'ideas' username=request.user.username %}" class="text-center pt-2 pb-2">ALL ideas</a></li>
+           
+            </ul>
+          </div>
+          
+        </div>
+  <!-- Button trigger modal -->
+	<button id="IdeasPostedStatus" hidden type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+		Launch ideas_posted status
+	</button>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ideas Posting Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="idea_posted_msg" class="modal-body">
+        {% for msg in messages%}
+        <p>{{msg}}</p>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+      </div>
+    </div>
+    </div>      
+
+          {% endblock content %}
+    

@@ -1,0 +1,143 @@
+{% extends 'base-template-navbar.html' %}
+
+{% block content %}
+
+   <form action="edit_profile" method="post" enctype="multipart/form-data">
+    <!-- personal -->
+    {%csrf_token%}
+    <div name="edit_personal" class="container mt-5">
+        <h4>Personal Information</h4>
+        <div class="form-group mt-5">
+            <h6><label for="user_profile_image">Profile Image</label></h6>
+            <p><span style="font-weight: bolder;">Currently </span><span name="Current_prof_img" style="font-weight: lighter;">{{user_profile_row.user_profile_image}}</span>
+            </p>
+            <input type="file" accept=".jpg,.jpeg,.png" class="form-control-file" name="user_profile_image">
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="user_cover_image">Cover Image</label></h6>
+            {%if user_profile_row.user_cover_image%}
+            <p><span style="font-weight: bolder;">Currently </span><span name="Current_cover_img" style="font-weight: lighter;">{{user_profile_row.user_cover_image}}</span>
+            </p>
+            {%endif%}
+            <input type="file" accept=".jpg,.jpeg,.png" class="form-control-file" name="user_cover_image">
+        </div>
+        <div class="form-group">
+            <h6><label for="user_about">User About</label></h6>
+            <textarea type="text" class="form-control" name="user_about" >{{user_profile_row.user_about}}</textarea>
+        </div>
+    </div>
+    <!-- education -->
+    <h4 class="container mt-5">Education</h4>
+    <h5 class="container mt-5">Add New Education</h5>
+    <div name = 'edit_education' class="container mt-5">
+        <!-- to add new education -->
+    
+        <div class="form-group">
+            <h6><label for="new_education_title">Education Title</label></h6>
+            <input type="text" class="form-control" name="new_education_title">
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="new_education_details">Education Details</label></h6>
+            <textarea type="text" class="form-control" name="new_education_details"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="new_edu_from_date">From Date</label></h6>
+            <input type="date" class="form-control" name="new_edu_from_date">
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="new_edu_to_date">End Date</label></h6>
+            <input type="date" class="form-control" name="new_edu_to_date">
+        </div>
+        <!-- edit old education details -->
+        {%for old_edu in user_education%}
+        <h5 class="container mt-5 ml-0 pl-0"> {{old_edu.id}}. Edit Old Education</h5>
+        
+        <div class="form-group">
+            <h6><label for="education_title_{{old_edu.id}}">Education Title</label></h6>
+            <input type="text" class="form-control" name="education_title_{{old_edu.id}}" value="{{old_edu.education_title}}">
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="education_details_{{old_edu.id}}">Education Details</label></h6>
+            <textarea type="text" class="form-control" name="education_details_{{old_edu.id}}" >{{old_edu.education_details}}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="edu_from_date_{{old_edu.id}}">From Date</label></h6>
+            <input type="date" class="form-control" name="edu_from_date_{{old_edu.id}}" value="{{old_edu.from_date|date:'Y-m-d'}}">
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="edu_to_date_{{old_edu.id}}">End Date</label></h6>
+            <input type="date" class="form-control" name="edu_to_date_{{old_edu.id}}" value="{{old_edu.to_date|date:'Y-m-d'}}">
+        </div>
+        {%endfor%}
+    </div>
+    <!-- Experience -->
+    <h4 class="container mt-5 mb-5">Experience</h4>
+    <!-- Add new Experience  -->
+    <h5 class="container mt-5">Add New Experience</h5>
+    <div name="edit_experience" class="container">
+        <div class="form-group">
+        <h6><label for="new_exp_job_position">Job Position</label></h6>
+        <input type="email" class="form-control" name="new_exp_job_position">
+        </div>
+        <div class="form-group">
+        <h6><label for="new_exp_company_name">Company Name</label></h6>
+        <input class="form-control" name="new_exp_company_name" >
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="new_experience_details">Experience Details</label></h6>
+            <textarea class="form-control" name="new_experience_details"></textarea>
+        </div>
+
+        <div class="form-group">
+            <h6><label for="new_exp_from_date">From Date</label></h6>
+            <input type="date" class="form-control" name="new_exp_from_date" >
+        </div>
+        
+        <div class="form-group">
+            <h6><label for="new_exp_to_date">To Date</label></h6>
+            <input type="date" class="form-control" name="new_exp_to_date" >
+        </div>
+        
+
+
+        <!-- edit old experience -->
+        {%for old_exp in user_experience%}
+        <h5 class="container mt-5 ml-0 pl-0"> {{old_exp.id}}. Edit Old Experience</h5>
+        
+        <div class="form-group">
+            <h6><label for="job_position_{{old_exp.id}}">Job Position</label></h6>
+            <input type="text" class="form-control" name="job_position_{{old_exp.id}}" value="{{old_exp.job_position}}">
+            </div>
+            <div class="form-group">
+            <h6><label for="company_name_{{old_exp.id}}">Company Name</label></h6>
+            <input class="form-control" name="company_name_{{old_exp.id}}" value="{{old_exp.company_name}}">
+            </div>
+            <div class="form-group">
+                <h6><label for="experience_details_{{old_exp.id}}">Experience Details</label></h6>
+                <textarea class="form-control" name="experience_details_{{old_exp.id}}">{{old_exp.experience_details}}</textarea>
+            </div>
+            <div class="form-group">
+                <h6><label for="exp_from_date_{{old_exp.id}}">From Date</label></h6>
+                <input type="date" class="form-control" name="exp_from_date_{{old_exp.id}}" value="{{old_exp.from_date|date:'Y-m-d'}}">
+            </div>
+            
+            <div class="form-group">
+                <h6><label for="exp_to_date_{{old_exp.id}}">To Date</label></h6>
+                <input type="date" class="form-control" name="exp_to_date_{{old_exp.id}}" value="{{old_exp.to_date|date:'Y-m-d'}}">
+            </div>
+            {%endfor%}
+            
+    </div>
+    <div class="container">
+    <button type="submit" class="btn btn-primary mb-5">Submit</button>
+        </div>
+</form>
+{%endblock%}
